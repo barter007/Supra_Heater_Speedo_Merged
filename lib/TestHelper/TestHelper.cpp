@@ -29,7 +29,7 @@ bool TestHelper::HasNewTestData()
                 _currentTestAction = TEST_ACTION_STEP_UP;
                 _lastStepMoveTimeInMs = millis();
                 hasNewCmd = true;
-                Serial.println("CurrentTestAction from TEST_MODE_CALIBRATION_POINTS to TEST_ACTION_STEP_UP");
+                Serial.println("CurrentTestAction from TEST_ACTION_MOVING_TO_STARTUP_POS to TEST_ACTION_STEP_UP");
             }
             else if(_currentTestAction == TEST_ACTION_STEP_UP && GetEllapsedTimeInMillis(_lastStepMoveTimeInMs) >= _nextStepMoveDelayInMs) {
                 _currentTestAction = TEST_ACTION_STEP_DOWN;
@@ -49,7 +49,7 @@ bool TestHelper::HasNewTestData()
                 _currentTestAction = TEST_ACTION_STEP_UP;
                 _lastStepMoveTimeInMs = millis();
                 hasNewCmd = true;
-                Serial.println("CurrentTestAction from TEST_MODE_CALIBRATION_POINTS to TEST_ACTION_STEP_UP");
+                Serial.println("CurrentTestAction from TEST_ACTION_MOVING_TO_STARTUP_POS to TEST_ACTION_STEP_UP");
             }
             else if(_currentTestAction == TEST_ACTION_STEP_UP && GetEllapsedTimeInMillis(_lastStepMoveTimeInMs) >= _nextStepMoveDelayInMs) {
 

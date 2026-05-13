@@ -79,12 +79,6 @@ void SpeedoHelper::Loop()
 
     // 2- Change Step motor direction if required
     long deltaSteps = _targetStepMotorPos - _currentStepMotorPos;
-    StepMotorDirection stepMotorDirection = (deltaSteps > 0) ? DIRECTION_CLOCKWISE : DIRECTION_ANTI_CLOCKWISE;
-
-    if(ChangeStepMotorDirectionIfRequired(stepMotorDirection))
-    {
-        return; 
-    }
 
     // 3- Move step motor if needed (Start/Stop pulse if needed)
     if(_stepMotorMoveInProgress && GetEllapsedTimeInMicros(_lastStepMotorPulseStartTimeInMicros) >= STEP_MOTOR_PULSE_DURATION_IN_MICROS) {
@@ -98,6 +92,13 @@ void SpeedoHelper::Loop()
     }
     else if(!_stepMotorMoveInProgress && !_stepMotorDirectionChangeInProgress && deltaSteps != 0) {
         if(abs(deltaSteps) > (_isTestMode ? 0 : STEP_TARGET_JITTER_PROTECTION_IN_STEPS) || _targetStepMotorPos == 0) {
+
+            StepMotorDirection stepMotorDirection = (deltaSteps > 0) ? DIRECTION_CLOCKWISE : DIRECTION_ANTI_CLOCKWISE;
+
+            if(ChangeStepMotorDirectionIfRequired(stepMotorDirection))
+            {
+                return; 
+            }
 
             int minDelayInMicrosBetweenSteps = CalculateStepDeltaTimeInMicros(NEEDLE_SPEED_MIN_DEGREES_PER_SECOND);
             int maxDelayInMicrosBetweenSteps = CalculateStepDeltaTimeInMicros(NEEDLE_SPEED_MAX_DEGREES_PER_SECOND);
