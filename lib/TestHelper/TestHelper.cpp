@@ -66,6 +66,9 @@ bool TestHelper::HasNewTestData()
                     _calibrationPointIndex--;
                     Serial.print(" | Switching calibration direction to DOWN for next calibration point.");
                 }
+                else{
+                    _calibrationCmdBufferIndex++;
+                }
                 Serial.println();
 
                 hasNewCmd = true;
@@ -84,6 +87,9 @@ bool TestHelper::HasNewTestData()
                     _currentTestAction = TEST_ACTION_STEP_UP;
                     _calibrationPointIndex++;
                     Serial.print(" | Switching calibration direction to UP for next calibration point.");
+                }
+                else{
+                    _calibrationCmdBufferIndex--;
                 }
                 Serial.println();
 
