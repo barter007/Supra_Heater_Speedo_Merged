@@ -131,11 +131,11 @@ int SpeedoHelper::GetTargetStepMotorPosFromKmPerHour(float speedInKmPerHour) {
 
     // 2. Find the segment
     for (int i = 0; i < CALIBRATION_DATA_POINTS_COUNT - 1; i++) {
-    if (speedInKmPerHour >= _calibrationDataPointsInputKmPerHour[i] && speedInKmPerHour <= _calibrationDataPointsInputKmPerHour[i+1]) {
-        // 3. Apply the Linear Interpolation Formula
-        // Equivalent to: map(val, rawValues[i], rawValues[i+1], refValues[i], refValues[i+1])
-        return (speedInKmPerHour - _calibrationDataPointsInputKmPerHour[i]) * (_calibrationDataPointsTargetAngleInDegrees[i+1] - _calibrationDataPointsTargetAngleInDegrees[i]) / (_calibrationDataPointsInputKmPerHour[i+1] - _calibrationDataPointsInputKmPerHour[i]) + _calibrationDataPointsTargetAngleInDegrees[i];
-    }
+        if (speedInKmPerHour >= _calibrationDataPointsInputKmPerHour[i] && speedInKmPerHour <= _calibrationDataPointsInputKmPerHour[i+1]) {
+            // 3. Apply the Linear Interpolation Formula
+            // Equivalent to: map(val, rawValues[i], rawValues[i+1], refValues[i], refValues[i+1])
+            return (speedInKmPerHour - _calibrationDataPointsInputKmPerHour[i]) * (_calibrationDataPointsTargetAngleInDegrees[i+1] - _calibrationDataPointsTargetAngleInDegrees[i]) / (_calibrationDataPointsInputKmPerHour[i+1] - _calibrationDataPointsInputKmPerHour[i]) + _calibrationDataPointsTargetAngleInDegrees[i];
+        }
     }
     return 0; // Should never reach here
 }
@@ -143,8 +143,14 @@ int SpeedoHelper::GetTargetStepMotorPosFromKmPerHour(float speedInKmPerHour) {
 bool SpeedoHelper::ChangeStepMotorDirectionIfRequired(StepMotorDirection newDirection)
 {
     if(newDirection != _currentStepMotorDirection)
-    {
-        digitalWrite(_stepMotorDirectionPin, newDirection); // Set direction based on whether we need to move forward or backward
+    {   // Set direction based on whether we need to move forward or backward
+        if(newDirection == DIRECTION_CLOCKWISE){
+            digitalWrite(_stepMotorDirectionPin, HIGH);
+        }
+        else{
+            digitalWrite(_stepMotorDirectionPin, LOW);
+        }
+        
         _stepMotorDirectionChangeInProgress = true;
         _lastStepMotorPulseStartTimeInMicros = micros();
         _currentStepMotorDirection = newDirection;
@@ -216,7 +222,7 @@ void SpeedoHelper::ResetStepMotor()
     delay(10);
     digitalWrite(_stepMotorResetPin, HIGH);
 
-    // Move back need to 0km/h
+    // Move back needle to 0km/h
     ChangeStepMotorDirectionIfRequired(DIRECTION_ANTI_CLOCKWISE);
     delayMicroseconds(20);
     for(int i = 0; i < 400; i++) {
