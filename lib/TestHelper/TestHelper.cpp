@@ -58,7 +58,7 @@ bool TestHelper::HasNewTestData()
                 _lastStepMoveTimeInMs = millis(); // Reset the timer for the next calibration point
 
                 Serial.print("Calibration Index: "); Serial.print(_calibrationPointIndex);
-                Serial.print("Calibration Point - Target Km/h: "); Serial.print(_targetStepMotorKmPerHour);
+                Serial.print(" | Calibration Point - Target Km/h: "); Serial.print(_targetStepMotorKmPerHour);
                 Serial.print(" | Target Angle: "); Serial.print(_calibrationDataPointsTargetAngleInDegrees[_calibrationPointIndex]);
 
                 if(_calibrationPointIndex == _calibrationPointsCount -1) {
@@ -67,7 +67,7 @@ bool TestHelper::HasNewTestData()
                     Serial.print(" | Switching calibration direction to DOWN for next calibration point.");
                 }
                 else{
-                    _calibrationCmdBufferIndex++;
+                    _calibrationPointIndex++;
                 }
                 Serial.println();
 
@@ -80,7 +80,7 @@ bool TestHelper::HasNewTestData()
                 _lastStepMoveTimeInMs = millis(); // Reset the timer for the next calibration point
 
                 Serial.print("Calibration Index: "); Serial.print(_calibrationPointIndex);
-                Serial.print("Calibration Point - Target Km/h: "); Serial.print(_targetStepMotorKmPerHour);
+                Serial.print(" | Calibration Point - Target Km/h: "); Serial.print(_targetStepMotorKmPerHour);
                 Serial.print(" | Target Angle: "); Serial.print(_calibrationDataPointsTargetAngleInDegrees[_calibrationPointIndex]);
 
                 if (_calibrationPointIndex == 0) {
@@ -89,7 +89,7 @@ bool TestHelper::HasNewTestData()
                     Serial.print(" | Switching calibration direction to UP for next calibration point.");
                 }
                 else{
-                    _calibrationCmdBufferIndex--;
+                    _calibrationPointIndex--;
                 }
                 Serial.println();
 
