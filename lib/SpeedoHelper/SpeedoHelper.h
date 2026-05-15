@@ -52,8 +52,8 @@ private:
     bool _isTestMode = false;   // If true, Test mode activated and takes commands from serial input. WheelSensorInput will be ignored in this mode.
 
     #define CALIBRATION_DATA_POINTS_COUNT 40
-    float _calibrationDataPointsInputKmPerHour[CALIBRATION_DATA_POINTS_COUNT] =         {0, 10, 15, 20, 25, 30.0, 35, 40.0, 45, 50, 55, 60, 65, 70.0, 75, 80.0, 85, 90.0, 95.0, 100.0, 105, 110, 115, 120, 125.0, 130.0, 135.0, 140.0, 145.0, 150, 155, 160, 165, 170.0, 175.0, 180.0, 185.0, 190.0, 195.0, 200};
-    float _calibrationDataPointsTargetAngleInDegrees[CALIBRATION_DATA_POINTS_COUNT] =   {0,  4,  6, 10, 15, 19.5, 24, 28.8, 34, 39, 44, 49, 54, 58.8, 64, 69.5, 75, 79.5, 84.5,  89.5,  95, 100, 105, 110, 114.5, 119.5, 124.5, 130.5, 135.5, 140, 145, 150, 155, 160.5, 165.5, 170.5, 175.5, 180.5, 185.5, 191};
+    float _calibrationDataPointsInputKmPerHour[CALIBRATION_DATA_POINTS_COUNT] =         {0, 10, 15, 20, 25, 30.0, 35, 40.0, 45.0, 50, 55, 60, 65, 70.0, 75, 80.0, 85.0, 90.0, 95.0, 100.0, 105, 110, 115, 120, 125.0, 130.0, 135.0, 140.0, 145.0, 150, 155, 160, 165, 170.0, 175.0, 180.0, 185.0, 190.0, 195.0, 200};
+    float _calibrationDataPointsTargetAngleInDegrees[CALIBRATION_DATA_POINTS_COUNT] =   {0,  3,  6, 10, 15, 19.5, 24, 28.8, 33.8, 39, 44, 49, 54, 58.8, 64, 69.5, 74.5, 79.5, 84.5,  89.5,  95, 100, 105, 110, 114.5, 119.5, 124.5, 130.5, 135.5, 140, 145, 150, 155, 160.5, 165.5, 170.5, 175.5, 180.5, 185.5, 191};
 
     // Other variables
     TestHelper _testHelper;  // Instance of TestHelper to use its functions in test mode
