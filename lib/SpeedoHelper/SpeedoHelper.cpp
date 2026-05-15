@@ -46,13 +46,13 @@ void SpeedoHelper::Loop()
         if(_testHelper.HasNewTestData())
         {
             if( _testHelper.GetCurrentTestMode() == TestHelper::TEST_MODE_ANGLE || 
-                _testHelper.GetCurrentTestMode() == TestHelper::TEST_MODE_JITTER ||
-                _testHelper.GetCurrentTestMode() == TestHelper::TEST_MODE_CALIBRATION_POINTS)
+                _testHelper.GetCurrentTestMode() == TestHelper::TEST_MODE_JITTER)
             {
                 float targetDegree = _testHelper.GetTargetStepMotorAngleInDegrees();
                 _targetStepMotorPos = targetDegree * (float)STEP_MOTOR_STEPS_PER_DEGREE; // Convert the target degree to steps for the step motor
             }
-            else if(_testHelper.GetCurrentTestMode() == TestHelper::TEST_MODE_KMH || _testHelper.GetCurrentTestMode() == TestHelper::TEST_MODE_CALIBRATION_POINTS)
+            else if(_testHelper.GetCurrentTestMode() == TestHelper::TEST_MODE_KMH || 
+                    _testHelper.GetCurrentTestMode() == TestHelper::TEST_MODE_CALIBRATION_POINTS)
             {
                 float targetDegree = GetTargetStepMotorPosFromKmPerHour(_testHelper.GetTargetStepMotorKmPerHour());
                 _targetStepMotorPos = targetDegree * (float)STEP_MOTOR_STEPS_PER_DEGREE; // Convert the target degree to steps for the step motor
