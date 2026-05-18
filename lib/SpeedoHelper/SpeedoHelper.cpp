@@ -41,6 +41,8 @@ void SpeedoHelper::Begin(int stepMotorPulsePin, int stepMotorDirectionPin, int s
 
 void SpeedoHelper::Loop()
 {
+    long deltaSteps = _targetStepMotorPos - _currentStepMotorPos;
+
     // 1- Compute target step motor pos if needed
     if(_isTestMode){
         if(_testHelper.HasNewTestData())
@@ -59,9 +61,9 @@ void SpeedoHelper::Loop()
             }
         }
     }
-    else if (GetEllapsedTimeInMillis(_lastTargetStepMotorUpdateTimeInMs) >= TARGET_POS_UPDATE_FREQUENCY_IN_MS) {
+    else if (GetEllapsedTimeInMicros(_lastTargetStepMotorUpdateTimeInMicros) >= TARGET_POS_UPDATE_FREQUENCY_IN_MS * 1000) {
         UpdateSpeedCalculationBufferWithLatestWheelSensorData();
-        _lastTargetStepMotorUpdateTimeInMs = millis();
+        _lastTargetStepMotorUpdateTimeInMicros = micros();
 
         float averageDurationInMicrosBetweenWheelSensorTriggers = GetAverageDurationInMicrosBetweenWheelSensorTriggers();
         float speedInKmPerHour = CalculateSpeedInKmPerHourFromAverageDurationInMicros(averageDurationInMicrosBetweenWheelSensorTriggers);
@@ -69,18 +71,19 @@ void SpeedoHelper::Loop()
         float targetDegree = GetTargetStepMotorPosFromKmPerHour(speedInKmPerHour);
         _targetStepMotorPos = targetDegree * (float)STEP_MOTOR_STEPS_PER_DEGREE; // Convert the target degree to steps for the step motor
 
-        Serial.print("SpeedoHelper.Loop() => averageDurationInMicrosBetweenWheelSensorTriggers: "); Serial.print(averageDurationInMicrosBetweenWheelSensorTriggers);
-        Serial.print(" | speedInKmPerHour: "); Serial.print(speedInKmPerHour);
-        Serial.print(" | targetDegree: "); Serial.print(targetDegree);
-        Serial.print(" | currentStepMotorPos: "); Serial.print(_currentStepMotorPos);
-        Serial.print(" | targetStepMotorPos: "); Serial.println(_targetStepMotorPos);
-        PrintCircularBuffer();
+        if(DEBUG_PRINT)
+        {
+            Serial.print("SpeedoHelper.Loop() => averageDurationInMicrosBetweenWheelSensorTriggers: "); Serial.print(averageDurationInMicrosBetweenWheelSensorTriggers);
+            Serial.print(" | speedInKmPerHour: "); Serial.print(speedInKmPerHour);
+            Serial.print(" | targetDegree: "); Serial.print(targetDegree);
+            Serial.print(" | currentStepMotorPos: "); Serial.print(_currentStepMotorPos);
+            Serial.print(" | targetStepMotorPos: "); Serial.print(_targetStepMotorPos);
+            Serial.print(" | deltaSteps: "); Serial.println(deltaSteps);
+            PrintCircularBuffer();
+        }
     }
 
-    // 2- Change Step motor direction if required
-    long deltaSteps = _targetStepMotorPos - _currentStepMotorPos;
-
-    // 3- Move step motor if needed (Start/Stop pulse if needed)
+    // 2- Move step motor if needed (Start/Stop pulse if needed)
     if(_stepMotorMoveInProgress && GetEllapsedTimeInMicros(_lastStepMotorPulseStartTimeInMicros) >= STEP_MOTOR_PULSE_DURATION_IN_MICROS) {
         // If a step motor move is in progress and the pulse duration has elapsed, end the current pulse, this is to replace the delayMicrosecond() between HIGH/LOW to produce pulse required by step motor
         _stepMotorMoveInProgress = false;
@@ -103,7 +106,7 @@ void SpeedoHelper::Loop()
             int minDelayInMicrosBetweenSteps = CalculateStepDeltaTimeInMicros(NEEDLE_SPEED_MIN_DEGREES_PER_SECOND);
             int maxDelayInMicrosBetweenSteps = CalculateStepDeltaTimeInMicros(NEEDLE_SPEED_MAX_DEGREES_PER_SECOND);
 
-            unsigned long intervalBeforeNextStepMotorMoveInMicros = map(constrain(abs(deltaSteps), 0, 100), 0, 100, minDelayInMicrosBetweenSteps, maxDelayInMicrosBetweenSteps);
+            unsigned long intervalBeforeNextStepMotorMoveInMicros = map(constrain(abs(deltaSteps), 0, 40), 0, 40, minDelayInMicrosBetweenSteps, maxDelayInMicrosBetweenSteps);
 
             if( _isTestMode && 
                 (_testHelper.GetCurrentTestMode() == TestHelper::TEST_MODE_ANGLE || _testHelper.GetCurrentTestMode() == TestHelper::TEST_MODE_KMH) &&
@@ -113,7 +116,6 @@ void SpeedoHelper::Loop()
            
             if(GetEllapsedTimeInMicros(_lastStepMotorPulseStartTimeInMicros) >= intervalBeforeNextStepMotorMoveInMicros) {
                 // If no step motor move is in progress and we need to move the step motor, and had high enough delay since last pulse, start a new pulse
-                
                 digitalWrite(_stepMotorPulsePin, HIGH);
                 _lastStepMotorPulseStartTimeInMicros = micros();
                 _stepMotorMoveInProgress = true;
@@ -187,7 +189,7 @@ void SpeedoHelper::UpdateSpeedCalculationBufferWithLatestWheelSensorData() {
     }
     else
     {
-        unsigned long deltaTimePerToothInMicros = GetEllapsedTimeInMillis(_lastTargetStepMotorUpdateTimeInMs) / count * 1000.0; // Convert from ms to micros
+        unsigned long deltaTimePerToothInMicros = GetEllapsedTimeInMicros(_lastTargetStepMotorUpdateTimeInMicros) / count;
         _bufferDurationsInMicrosBetweenWheelSensorTriggers.push(deltaTimePerToothInMicros);
     }
 

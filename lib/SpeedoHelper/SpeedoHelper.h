@@ -27,20 +27,20 @@ private:
         DIRECTION_CLOCKWISE,
         DIRECTION_ANTI_CLOCKWISE,
     };
-
+    const bool DEBUG_PRINT = false;    // Set to true to enable serial print for debugging purposes
     const int STEP_MOTOR_PULSE_DURATION_IN_MICROS = 20; // Duration of each pulse sent to the step motor (in microseconds). Also used for direction change
     const int STEP_MOTOR_STEPS_PER_DEGREE = 12;   // Number of steps the step motor needs to take to move the speedo needle by 1 degree.
-    const int NEEDLE_SPEED_MIN_DEGREES_PER_SECOND = 30;   // Minimum speed at which the speedo needle can move in degrees per second.
-    const int NEEDLE_SPEED_MAX_DEGREES_PER_SECOND = 60;   // Maximum speed at which the speedo needle can move in degrees per second.
+    const int NEEDLE_SPEED_MIN_DEGREES_PER_SECOND = 5;   // Minimum speed at which the speedo needle can move in degrees per second.
+    const int NEEDLE_SPEED_MAX_DEGREES_PER_SECOND = 25;   // Maximum speed at which the speedo needle can move in degrees per second.
     const int ABS_RING_TEETH_COUNT = 44;    // Number of teeth on the ABS ring that the wheel sensor detects. This is used to calculate the speed from the duration between wheel sensor triggers.
-    const int STEP_TARGET_JITTER_PROTECTION_IN_STEPS = 4; // If the target step motor position is within this number of steps from the current position, we won't move the step motor. This is to avoid jitter when the calculated speed is fluctuating around a value that would require the needle to be in a certain position, we can adjust this value based on how much jitter we want to allow vs how responsive we want the speedo to be.
+    const int STEP_TARGET_JITTER_PROTECTION_IN_STEPS = 0; // If the target step motor position is within this number of steps from the current position, we won't move the step motor. This is to avoid jitter when the calculated speed is fluctuating around a value that would require the needle to be in a certain position, we can adjust this value based on how much jitter we want to allow vs how responsive we want the speedo to be.
     const unsigned long MIN_DELAY_IN_MICROS_BETWEEN_WHEEL_SENSOR_TRIGGERS = 520; // 520Us is expected delay at 320km/h.Minimum delay in microseconds between wheel sensor triggers to consider them valid. This is used to filter out noise and avoid calculating unrealistically high speeds when the wheel sensor is triggered multiple times in a very short period of time due to noise or other factors.
     const int TARGET_POS_UPDATE_FREQUENCY_IN_MS = 100;    // How often to interpret wheel sensor data and set the new step motor target position (not actually moving the step motor).
     const float WHEEL_CIRCUMFERENCE_IN_METERS = 2.025; // Example: 65.3cm is 0.653m
     const unsigned long FALLBACK_TO_0KMH_AFTER_NO_WHEEL_SENSOR_TRIGGER_FOR_IN_MS = 500; // If no wheel sensor trigger is detected for this duration, we consider the vehicle to be stopped and set the speedo to 0km/h.
     const int PHYSICAL_SPEEDO_ANGLE_DISPLAYED_SPEED_AT_180_DEGREES= 192; // At 180 degrees from 0km/h the physical cluster is displaying what speed in km/h? This is used to calculate the target degree for the speedo needle based on the calculated speed.
 
-    #define WHEEL_SENSOR_BUFFER_SIZE 10	// Number of last durations between wheel sensor triggers to keep track of for speed calculation. This is a trade-off between having a responsive speedo (lower number) vs a more stable speedo (higher number).
+    #define WHEEL_SENSOR_BUFFER_SIZE 8	// Number of last durations between wheel sensor triggers to keep track of for speed calculation. This is a trade-off between having a responsive speedo (lower number) vs a more stable speedo (higher number).
 
     // Pins Definitions
     int _stepMotorPulsePin;
@@ -65,7 +65,7 @@ private:
     pcnt_unit_t _pcntUnit = PCNT_UNIT_0;
     unsigned long _lastSpeedoNeedleUpdateTimeInMs = 0;
     unsigned long _lastStepMotorPulseStartTimeInMicros = 0;
-    unsigned long _lastTargetStepMotorUpdateTimeInMs = 0;
+    unsigned long _lastTargetStepMotorUpdateTimeInMicros = 0;
     
     CircularBuffer<unsigned long, WHEEL_SENSOR_BUFFER_SIZE> _bufferDurationsInMicrosBetweenWheelSensorTriggers;	// Circular buffer to store the last durations between wheel sensor triggers for speed calculation
 

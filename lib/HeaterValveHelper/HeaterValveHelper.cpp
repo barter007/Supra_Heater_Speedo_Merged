@@ -41,7 +41,7 @@ void HeaterValveHelper::Loop()
     }
 
     // Only move the servo if the target angle is sufficiently different from the previous angle to avoid unnecessary movements
-    if (abs(_targetServoAngle - _previousServoAngle) >= SERVO_MOVE_ANGLE_THRESHOLD)
+    if (abs(_targetServoAngle - _previousServoAngle) > SERVO_MOVE_ANGLE_THRESHOLD && GetEllapsedTimeInMillis(_lastServoActivationTime) >= SERVO_MOTOR_TIME_BETWEEN_ANGLE_CHANGE_IN_MS)
     {
         Serial.print("Thermistor value: ");
         Serial.print(_thermistorAvgValue);
@@ -68,5 +68,26 @@ void HeaterValveHelper::Loop()
 // Private Functions
 int HeaterValveHelper::CalculateTargetServoAngleFromThermistorValue(int thermistorValue)
 {
-    return map(constrain(thermistorValue, MIN_THERMISTOR_VALUE, MAX_THERMISTOR_VALUE), MIN_THERMISTOR_VALUE, MAX_THERMISTOR_VALUE, MIN_ANGLE, MAX_ANGLE);
+    int index = FindClosestCalibrationDataPointIndex(thermistorValue);
+    
+    return map(index, 0, THERMISTOR_CALIBRATION_DATA_POINTS_COUNT - 1, MAX_ANGLE, MIN_ANGLE);
+}
+
+int HeaterValveHelper::FindClosestCalibrationDataPointIndex(int thermistorValue)
+{
+    int closestIndex = 0;
+    long smallestDifference = abs(thermistorValue - _calibrationDataPointsInputThermistorValue[0]);
+
+    for (int i = 1; i < THERMISTOR_CALIBRATION_DATA_POINTS_COUNT; i++)
+    {
+        long difference = abs(thermistorValue - _calibrationDataPointsInputThermistorValue[i]);
+
+        if (difference < smallestDifference)
+        {
+            smallestDifference = difference;
+            closestIndex = i;
+        }
+    }
+
+    return closestIndex;
 }

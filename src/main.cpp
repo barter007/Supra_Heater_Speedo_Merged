@@ -15,19 +15,19 @@ const int STEP_MOTOR_DIRECTION_PIN = 13;    // We set this pin to determine the 
 const int STEP_MOTOR_RESET_PIN = 33;        // Used to set step sensitivity of the step motor
 const int WHEEL_SENSOR_PIN = 1;             // Hall effect sensor reading is on this pin
 
-const bool IS_TEST_MODE = true;   // If true, the speedo needle can move to target angle inputed from serial console. WheelSensorInput will be ignored in this mode.
+const bool IS_TEST_MODE = false;   // If true, the speedo needle can move to target angle inputed from serial console. WheelSensorInput will be ignored in this mode.
 
 HeaterValveHelper _heaterValveHelper;
 SpeedoHelper _speedoHelper;
 
 void setup() {
   Serial.begin(115200);
-  //_heaterValveHelper.Begin(SERVO_PIN, THERMISTOR_PIN);
+  _heaterValveHelper.Begin(SERVO_PIN, THERMISTOR_PIN);
   _speedoHelper.Begin(STEP_MOTOR_PULSE_PIN, STEP_MOTOR_DIRECTION_PIN, STEP_MOTOR_RESET_PIN, WHEEL_SENSOR_PIN, IS_TEST_MODE);
 }
 
 void loop() {
-  //_heaterValveHelper.Loop();
+  _heaterValveHelper.Loop();
   _speedoHelper.Loop();
 }
 
